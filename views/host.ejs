@@ -3,7 +3,14 @@
     <div class="col-md-4 ">
       <form class="form-signin" action="/submit" method="post">
         <h1 class="h3 mb-3 fw-normal">Add an event</h1>
-    
+        <div class="form-group form-floating">
+          <select class="form-control" style="padding-top:0; padding-bottom: 0;" id="exampleFormControlSelect1">
+            <option selected="selected">Select Location</option>
+            <% facilityList.forEach((elem) => { %>
+              <option id="<%= elem._id %>"><%= elem.name %></option>
+            <% }) %>
+          </select>
+        </div>
         <div class="form-floating">
           <input name="location" class="form-control" id="floatinglocation" placeholder="NUS">
           <label for="floatinglocation">Location</label>

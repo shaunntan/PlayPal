@@ -21,34 +21,26 @@ const activitySchema = new mongoose.Schema({
     host: String,
     sport: String
   });
+
+const facilitySchema = new mongoose.Schema({
+    name: String,
+    latitude: Number,
+    longitude: Number
+    });
   
 const Activity = mongoose.model('activity', activitySchema);
-
-var testlist = [
-    {
-        "id": "abc",
-        "location": "NUS",
-        "host": "Shaunn",
-        "sport": "Soccer"
-    },
-    {
-        "id": "def",
-        "location": "NUS",
-        "host": "Gary",
-        "sport": "Basketball"
-    },
-    {
-        "id": "ghj",
-        "location": "NUS",
-        "host": "Bill",
-        "sport": "Golf"
-    }] ;
+const Facility = mongoose.model('facility', facilitySchema);
 
 app.get("/", (req, res) => {
 
     Activity.find({}, (err, docs) => {
         if (!err) {
-            res.render("home", {eventList: docs});
+            var sportList = [];
+            docs.forEach((elem) => {
+                sportList.push(elem.sport)
+            })
+            const uniqueSportList = [...new Set(sportList)];
+            res.render("home", {eventList: docs, uniqueSportList: uniqueSportList});
         }
     });
 });
@@ -62,7 +54,12 @@ app.get("/register", (req, res) => {
 });
 
 app.get("/host", (req, res) => {
-    res.render("host");
+
+    Facility.find({}).sort('name').exec((err, docs) => {
+        if (!err) {
+            res.render("host", {facilityList: docs});
+        }
+    });
 });
 
 app.post("/submit", (req, res) => {

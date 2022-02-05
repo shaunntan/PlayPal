@@ -17,10 +17,10 @@
             <div class="sportselection">
                 <p class="sportselection-child">Filter by Sport:</p>
                 <select id="sportfilter" class="sportselection-child" onChange="filterTable()">
-                    <option value="showall" selected="selected">Show All</option>
-                    <option value="soccer">Soccer</option>
-                    <option value="basketball">Basketball</option>
-                    <option value="golf">Golf</option>
+                    <option selected="selected">Show All</option>
+                    <% uniqueSportList.forEach((elem) => { %>
+                        <option><%= elem %></option>
+                    <% }) %>
                 </select>
             </div>
 
