@@ -1,0 +1,26 @@
+<%- include('partials/header') %>
+<div class="row text-center justify-content-md-center">
+    <div class="col-md-4 ">
+      <form class="form-signin" action="/submit" method="post">
+        <h1 class="h3 mb-3 fw-normal">Add an event</h1>
+    
+        <div class="form-floating">
+          <input name="location" class="form-control" id="floatinglocation" placeholder="NUS">
+          <label for="floatinglocation">Location</label>
+        </div>
+        <div class="form-floating">
+          <input name="hostname" class="form-control" id="floatingname" placeholder="Name">
+          <label for="floatingname">Host Name</label>
+        </div>
+        <div class="form-floating">
+          <input name="sport" class="form-control" id="floatingsport" placeholder="Golf">
+          <label for="floatingsport">Sport</label>
+        </div>
+    
+        <button class="w-100 btn btn-lg btn-primary mt-2" type="submit">Add Event!</button>
+
+      </form>
+    </div>
+  </div>
+   
+<%- include('partials/footer') %>

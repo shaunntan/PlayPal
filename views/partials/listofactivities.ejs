@@ -1,0 +1,21 @@
+<table class="table table-hover clickable-row" >
+    <thead>
+        <tr>
+        <th scope="col">#</th>
+        <th scope="col">Location</th>
+        <th scope="col">Host</th>
+        <th scope="col">Game</th>
+        </tr>
+    </thead>
+    <tbody id="listofactivities">
+        <% var i=1; eventList.forEach((elem) => { %>
+            <tr id=<%= elem._id %> class="<%= elem.sport %>" data-href="/<%= elem._id %>">
+                <td><%= i %></td>
+                <td><%= elem.location %></td>
+                <td><%= elem.host %></td>
+                <td><%= elem.sport %></td>
+            </tr>
+            <% i++ ; %>
+        <% }); %>
+    </tbody>
+</table>

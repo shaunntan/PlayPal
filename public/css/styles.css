@@ -1,0 +1,41 @@
+body {
+    margin: 30px 30px auto 53px;
+    background-color: #FFF1AF;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.navbar-brand {
+    margin-right: 50px;
+    font-weight: bold;
+}
+
+.btnpad {
+    margin-left: 10px;
+}
+
+.bottompad {
+    margin-bottom: 20px;
+}
+
+.footerpad {
+ margin-bottom: 30px;
+}
+
+#map {
+    height: 600px;
+    /* The height is 400 pixels */
+    width: 100%;
+    /* The width is the width of the web page */
+  }
+  
+  [data-href] {
+    cursor: pointer;
+}
+
+.loginlogo {
+    font-size: 5rem;
+}
+
+.sportselection-child {
+    display: inline-block;
+  }

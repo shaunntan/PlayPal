@@ -1,0 +1,11 @@
+<!--The div element for the map -->
+<script src="js/map.js"></script>
+<div class="shadow rounded" id="map"></div>
+
+<!-- Async script executes immediately and must be after any DOM elements used in callback. -->
+<script
+    src="https://maps.googleapis.com/maps/api/js?key=<%= process.env.API_KEY %>&callback=initMap&libraries=&v=weekly"
+    async
+></script>
+
+
