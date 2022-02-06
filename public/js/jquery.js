@@ -25,7 +25,18 @@ function filterTable() {
             tr[i].style.display = "";
         }
     }
-
-
-    
 };
+
+
+function fillHostingForm() {
+    const locationID = $('#locationSelector :selected').attr("id");
+    const locationText = $('#locationSelector :selected').text();
+
+    console.log(locationID);
+    console.log(locationText);
+
+    $('#locationname').val(locationText);
+    $('#locationid').val(locationID);
+
+};
+

@@ -1,5 +1,33 @@
 <!--The div element for the map -->
-<script src="js/map.js"></script>
+
+<!-- <script src="js/map.js"></script> -->
+
+<script>
+    // eslint-disable-next-line
+    var locs = <%-JSON.stringify(locList)%>;
+    function initMap() {
+        // The location of Singapore
+        const location = { lat: 1.3579974, lng: 103.8147373 };
+        // The map, centered at Singapore
+        const map = new google.maps.Map(document.getElementById("map"), {
+        zoom: 11,
+        center: location,
+        });
+        // The marker, positioned at Singapore
+        // const marker = new google.maps.Marker({
+        
+        for (var i = 0; i<locs.length; i++) {
+            const facilityLoc = { lat: locs[i][1], lng: locs[i][2] };
+            console.log(facilityLoc);
+            new google.maps.Marker({
+            position: facilityLoc,
+            map: map
+            })
+        };
+
+        };
+</script>
+
 <div class="shadow rounded" id="map"></div>
 
 <!-- Async script executes immediately and must be after any DOM elements used in callback. -->
