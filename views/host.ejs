@@ -1,15 +1,19 @@
 <%- include('partials/header') %>
-<div class="row text-center justify-content-md-center">
+<div class="row text-center justify-content-md-center" style="padding-top: 50px;">
     <div class="col-md-4 ">
       <form class="form-signin" action="/submit" method="post">
-        <h1 class="h3 mb-3 fw-normal">Add an event</h1>
+        <h1 class="h3 mb-3 fw-normal fw-bold">Add an event</h1>
         <div class="form-group form-floating">
           <select class="form-control" style="padding-top:0; padding-bottom: 0;" id="locationSelector" onChange="fillHostingForm()">
             <option selected="selected">Select Location</option>
             <% facilityList.forEach((elem) => { %>
-              <option id="<%= elem._id %>"><%= elem.name %></option>
+              <option id="<%= elem._id %>" name="<% var loc = [elem.latitude, elem.longitude]; %><%- loc %>"><%= elem.name %></option>
             <% }) %>
           </select>
+        </div>
+        <div class="form-floating">
+          <input type="datetime-local" style="padding-top:0; padding-bottom: 0;" class="form-control" name="eventdate" id="eventdate">
+          <!-- <label for="floatingname">Host Name</label> -->
         </div>
         <div class="form-floating">
           <input name="hostname" class="form-control" id="floatingname">
@@ -21,9 +25,12 @@
         </div>
         <input type="hidden" name="locationid" id="locationid">
         <input type="hidden" name="locationname" id="locationname">
-        <button class="w-100 btn btn-lg btn-primary mt-2" type="submit">Add Event!</button>
+        <button class="w-100 btn btn-lg btn-primary mt-2 mb-2" type="submit">Add Event!</button>
 
       </form>
+    </div>
+    <div class="col-md-6">
+      <%- include('partials/map') %>
     </div>
   </div>
    

@@ -31,9 +31,13 @@ function filterTable() {
 function fillHostingForm() {
     const locationID = $('#locationSelector :selected').attr("id");
     const locationText = $('#locationSelector :selected').text();
+    const locString = $('#locationSelector :selected').attr("name");
+    
 
-    console.log(locationID);
-    console.log(locationText);
+    // console.log(locationID);
+    // console.log(locationText);
+
+    initMap(locString.split(","));
 
     $('#locationname').val(locationText);
     $('#locationid').val(locationID);

@@ -4,26 +4,47 @@
 
 <script>
     var locs = <%-JSON.stringify(locList)%>;
-    function initMap() {
-        // The location of Singapore
-        const location = { lat: 1.3579974, lng: 103.8147373 };
-        // The map, centered at Singapore
-        const map = new google.maps.Map(document.getElementById("map"), {
-        zoom: 11,
-        center: location,
-        });
-        // The marker, positioned at Singapore
-        // const marker = new google.maps.Marker({
-        
-        for (var i = 0; i<locs.length; i++) {
-            const facilityLoc = { lat: locs[i][1], lng: locs[i][2] };
-            console.log(facilityLoc);
-            new google.maps.Marker({
-            position: facilityLoc,
-            map: map
-            })
-        };
+    // console.log(locs);
+    function initMap(oneLoc) {
+            // The location of Singapore
+            // const location = { lat: 1.3579974, lng: 103.8147373 };
+            // // The map, centered at Singapore
+            // const map = new google.maps.Map(document.getElementById("map"), {
+            // zoom: 11.5,
+            // center: location,
+            // });
+            // The marker, positioned at Singapore
+            // const marker = new google.maps.Marker({
 
+            if (oneLoc) {
+
+                const facilityLoc = { lat: Number(oneLoc[0]), lng: Number(oneLoc[1]) };
+                const map = new google.maps.Map(document.getElementById("map"), {
+                zoom: 16,
+                center: facilityLoc,
+                });                
+
+                // console.log(facilityLoc);
+                new google.maps.Marker({
+                position: facilityLoc,
+                map: map
+                })
+            } else {
+                const location = { lat: 1.3579974, lng: 103.8147373 };
+                // The map, centered at Singapore
+                const map = new google.maps.Map(document.getElementById("map"), {
+                zoom: 11.5,
+                center: location,
+                });
+                for (var i = 0; i<locs.length; i++) {
+                    const facilityLoc = { lat: locs[i][1], lng: locs[i][2] };
+                    // console.log(facilityLoc);
+                    new google.maps.Marker({
+                    position: facilityLoc,
+                    map: map
+                    })
+                };
+            }
         };
 </script>
 
