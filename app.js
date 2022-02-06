@@ -4,7 +4,7 @@ require('dotenv').config();
 // use express as web app framework 
 const express = require("express");
 const app = express();
-const PORT = 3000;
+const PORT = 4000;
 app.use(express.static("public"));
 
 // use ejs for templating
@@ -19,6 +19,32 @@ app.use(bodyParser.urlencoded({extended: true}));
 const API_KEY = process.env.API_KEY;
 const mongoose = require("mongoose");
 mongoose.connect(`mongodb+srv://shaunntan:${process.env.MONGOPASS}@cluster0.r0vqb.mongodb.net/playpalDB?retryWrites=true&w=majority`);
+// mongoose.connect("mongodb://localhost:27017/playpalDB");
+
+// authentication
+const session = require("express-session");
+const passport = require("passport");
+const passportLocalMongoose = require("passport-local-mongoose");
+app.use(session({
+    secret: "secret",
+    resave: false,
+    saveUninitialized: false
+}));
+app.use(passport.initialize());
+app.use(passport.session());
+
+var userSchema = new mongoose.Schema({
+    username: String,
+    password: String
+});
+
+userSchema.plugin(passportLocalMongoose);
+
+const User = new mongoose.model('user', userSchema);
+
+passport.use(User.createStrategy());
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
 
 // create activity schema
 const activitySchema = new mongoose.Schema({
@@ -44,6 +70,11 @@ const Facility = mongoose.model('facility', facilitySchema);
 
 // GET home route
 app.get("/", (req, res) => {
+    if (req.isAuthenticated()) {
+        console.log("here");
+    } else {
+        console.log("there");
+    }
     Activity.find({}).sort('eventDate').exec((err, docs) => {
         if (!err) {
             var sportList = [];
@@ -60,14 +91,51 @@ app.get("/", (req, res) => {
 });
 
 // GET signin page needs work
-app.get("/signin", (req, res) => {
-    res.render("signin");
+app.route("/signin")
+    .get((req, res) => {
+        res.render("signin");
+    })
+    .post((req, res) => {
+        const user = new User({
+            username: req.body.username,
+            password: req.body.password
+        })
+        console.log(user);
+        req.login(user, (err) => {
+            if (err) {
+                console.log(err);
+            } else {
+                passport.authenticate("local")(req, res, function(){
+                    res.redirect("/");
+                });
+            }
+
+        });
+    })    
+    ;
+
+app.get("/logout", (req, res) => {
+    req.logout();
+    res.redirect("/");
 });
 
 // GET registration page needs work
-app.get("/register", (req, res) => {
-    res.render("register");
-});
+app.route("/register")
+    .get((req, res) => {
+        res.render("register");
+    })
+    .post((req, res) => {
+        User.register({username: req.body.registerEmail}, req.body.registerPassword, (err, user) => {
+            if (err) {
+                console.log(err);
+                res.redirect("/register");
+            } else {
+                res.redirect("/signin");
+            }
+        })
+    })
+;
+
 
 // GET add new activity page
 app.get("/host", (req, res) => {
