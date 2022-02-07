@@ -4,16 +4,13 @@
         <div class="col-md-12">
             <h1 class="fw-bold text-center bottompad">Welcome to PlayPal</h1>
         </div>
-        <div class="col-md-12">
-            <h3 class="text-center bottompad">Events Happening Around You!</h3>
-        </div>
     </div>
 
     <div class="row justify-content-md-center">
 
        
         <div class="col-md-6 ">
-            <h3 class="">Join a Game!</h3>
+            <h3 class="fw-bold">Events Happening Around You!</h3>
             <div class="sportselection">
                 <p class="sportselection-child">Filter by Sport:</p>
                 <select id="sportfilter" class="sportselection-child" onChange="filterTable()">
@@ -23,7 +20,7 @@
                     <% }) %>
                 </select>
             </div>
-
+            <h5 class="">Select an event to join!</h3>
         <%- include('partials/listofactivities'); %>
         </div>
         <div class="col-md-6 ">

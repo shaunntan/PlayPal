@@ -35,6 +35,8 @@ app.use(passport.session());
 
 var userSchema = new mongoose.Schema({
     username: String,
+    firstName: String,
+    lastName: String,
     password: String
 });
 
@@ -54,7 +56,21 @@ const activitySchema = new mongoose.Schema({
     host: String,
     sport: String,
     latitude: Number,
-    longitude: Number
+    longitude: Number,
+    owner: String,
+    teammates: [String]
+});
+
+const joinedSchema = new mongoose.Schema({
+    eventID: String,
+    userID: String,
+    locationID: String,
+    locationName: String,
+    eventDate: Date,
+    host: String,
+    sport: String,
+    latitude: Number,
+    longitude: Number,
 });
 
 //create facility schema
@@ -67,14 +83,28 @@ const facilitySchema = new mongoose.Schema({
 // create mongoose models
 const Activity = mongoose.model('activity', activitySchema);
 const Facility = mongoose.model('facility', facilitySchema);
+const Joined = mongoose.model('join', joinedSchema);
+
+function getUser(req) {
+    var user = []; 
+    var id = [];  
+    if (req.isAuthenticated()) {
+        const name = [req.user.firstName, req.user.lastName].join(' ');
+        user.push(name);
+        id.push(req.user._id);
+        // console.log(id);
+    };
+    return [user, id];
+};
+
+
 
 // GET home route
 app.get("/", (req, res) => {
-    if (req.isAuthenticated()) {
-        console.log("here");
-    } else {
-        console.log("there");
-    }
+
+    // check auth status and pass username
+    const user = getUser(req)[0];
+
     Activity.find({}).sort('eventDate').exec((err, docs) => {
         if (!err) {
             var sportList = [];
@@ -85,7 +115,7 @@ app.get("/", (req, res) => {
                 locList.push(loc);
             });
             const uniqueSportList = [...new Set(sportList)];
-            res.render("home", {eventList: docs, uniqueSportList: uniqueSportList, locList: locList});
+            res.render("home", {eventList: docs, uniqueSportList: uniqueSportList, locList: locList, user: user});
         }
     });
 });
@@ -100,7 +130,7 @@ app.route("/signin")
             username: req.body.username,
             password: req.body.password
         })
-        console.log(user);
+        // console.log(user);
         req.login(user, (err) => {
             if (err) {
                 console.log(err);
@@ -125,11 +155,16 @@ app.route("/register")
         res.render("register");
     })
     .post((req, res) => {
-        User.register({username: req.body.registerEmail}, req.body.registerPassword, (err, user) => {
+        const username = req.body.registerEmail
+        const firstName = req.body.registerFirstName;
+        const lastName = req.body.registerLastName;
+        User.register(new User({username: username, firstName: firstName, lastName: lastName}), req.body.registerPassword, (err, user) => {
             if (err) {
                 console.log(err);
                 res.redirect("/register");
             } else {
+                console.log(user);
+
                 res.redirect("/signin");
             }
         })
@@ -139,17 +174,23 @@ app.route("/register")
 
 // GET add new activity page
 app.get("/host", (req, res) => {
-    Facility.find({}).sort('name').exec((err, docs) => {
-        if (!err) {
-            var locList = [];
-            res.render("host", {facilityList: docs, locList: locList});
-        }
-    });
+    if (req.isAuthenticated()) {
+        const user = getUser(req)[0];
+
+        Facility.find({}).sort('name').exec((err, docs) => {
+            if (!err) {
+                var locList = [];
+                res.render("host", {facilityList: docs, locList: locList, user: user});
+            }
+        });
+    } else {
+        res.redirect("/signin");
+    }
 });
 
 // POST new activity to mongodb
 app.post("/submit", (req, res) => {
-    console.log(req.body);
+    // console.log(req.body);
     const locationID = req.body.locationid;
     const locationName = req.body.locationname;
     const host = req.body.hostname;
@@ -168,7 +209,9 @@ app.post("/submit", (req, res) => {
                 host: host,
                 sport: sport,
                 latitude: lat,
-                longitude: long})
+                longitude: long,
+                owner: req.user._id
+            })
 
             activity.save().then(() => {res.redirect("/");});
             
@@ -176,9 +219,32 @@ app.post("/submit", (req, res) => {
     });
 });
 
+app.get("/profile", (req,res) => {
+    const user = getUser(req)[0];
+    const userID = getUser(req)[1];
+    if (req.isAuthenticated()) {
+        Activity.find({owner: userID}).sort('eventDate').exec((err, docs) => {
+            if (!err) {
+                Joined.find({userID: userID}).sort('eventDate').exec((err, docs_) => {
+                    var locList = [];
+                    docs.forEach((elem) => {
+                        var loc = [elem.locationName, elem.latitude, elem.longitude, 0];
+                        locList.push(loc);
+                    });
+                    res.render("profile", {eventList: docs, joinedList: docs_, locList: locList, user: user});
+                });
+            };
+        });
+        } else {
+        res.redirect("/")
+    };
+});
+
+
 // GET page for specific activity
 app.get("/:activityID", (req, res) => {
-
+    const user = getUser(req)[0];
+    const userID = getUser(req)[1];
     const activityID = req.params.activityID;
 
     Activity.findOne({_id: activityID}, (err, docs) => {
@@ -187,10 +253,35 @@ app.get("/:activityID", (req, res) => {
             var loc = [docs.locationName, docs.latitude, docs.longitude, 0];
             var locList = [];
             locList.push(loc);
-            res.render("showactivity", {eventItem: eventItem, locList: locList});        
+            res.render("showactivity", {eventItem: eventItem, locList: locList, user: user, userID: userID, activityID: activityID});        
         };
     });
 });
+
+// POST join team!
+app.post("/jointeam", (req,res) => {
+    const activityID = req.body.activityid;
+    const userID = req.body.userid;
+    // console.log(activityID);
+    // console.log(userID);
+    Activity.updateOne({_id: activityID}, {$addToSet: {'teammates': userID}});
+    Activity.findOne({_id: activityID}, (err, docs) => {
+        const joining = new Joined({
+            eventID: activityID,
+            userID: userID,
+            locationID: docs.locationID,
+            locationName: docs.locationName,
+            eventDate: docs.eventDate,
+            host: docs.host,
+            sport: docs.sport,
+            latitude: docs.latitude,
+            longitude: docs.longitude,
+        });
+        joining.save().then(() => {res.redirect("/profile");});
+
+    });
+});
+
 
 app.listen(PORT);   
 

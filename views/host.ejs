@@ -15,10 +15,10 @@
           <input type="datetime-local" style="padding-top:0; padding-bottom: 0;" class="form-control" name="eventdate" id="eventdate">
           <!-- <label for="floatingname">Host Name</label> -->
         </div>
-        <div class="form-floating">
-          <input name="hostname" class="form-control" id="floatingname">
-          <label for="floatingname">Host Name</label>
-        </div>
+        <!-- <div class="form-floating"> -->
+          <input type="hidden" name="hostname" class="form-control" id="floatingname" value="<%= user %>">
+          <!-- <label for="floatingname">Host Name</label>
+        </div> -->
         <div class="form-floating">
           <input name="sport" class="form-control" id="floatingsport">
           <label for="floatingsport">Sport</label>

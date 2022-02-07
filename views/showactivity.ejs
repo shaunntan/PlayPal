@@ -3,9 +3,13 @@
     <div class="row justify-content-md-center">
         <div class="col-md-6">
             <%- include('partials/activity'); %>
-            <div class="text-center">
-                <button class="btn btn-primary mb-3" type="button">Join Team!</button>
-            </div>
+            <form action="/jointeam" method="post">
+                <input type="hidden" name="userid" value="<%= userID %>">
+                <input type="hidden" name="activityid" value="<%= activityID %>">
+                <button class="btn btn-primary mb-3" type="submit">Join Team!</button>
+            </form>
+
+
 
         </div>
         <div class="col-md-6 align-self-center text-center">

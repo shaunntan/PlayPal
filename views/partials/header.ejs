@@ -36,9 +36,13 @@
                 <a class="nav-link" href="/aboutus">About Us</a>
               </li>            
             </ul>
-            <a href="/logout"><button class="btn btn-outline-primary btnpad shadow-sm " type="button">Logout</button></a>
+            <% if (user.length === 1) {%>
+            <a class="nav-link" style="color: black;" href="/profile"><i class="fas fa-user"></i>&nbsp;&nbsp;&nbsp;<%= user[0] %></a>
+            <a href="/logout"><button class="btn btn-danger btnpad shadow-sm " type="button">Logout</button></a>
+            <% } else {%>
             <a href="/register"><button class="btn btn-outline-primary btnpad shadow-sm " type="button">Register</button></a>
             <a href="/signin"><button class="btn btn-primary btnpad shadow-sm " type="button">Login</button></a>
+            <% } %>
           </div>
         </div>
       </nav>
