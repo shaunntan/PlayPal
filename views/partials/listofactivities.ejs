@@ -9,7 +9,7 @@
     </thead>
     <tbody id="listofactivities">
         <% var i=1; eventList.forEach((elem) => { %>
-            <tr id=<%= elem._id %> class="<%= elem.sport %>" data-href="/<%= elem._id %>">
+            <tr name=<%= elem._id %> class="<%= elem.sport %>" data-href="/<%= elem._id %>">
                 <td><%= (new Date( elem.eventDate)).toLocaleDateString("en-SG") %>, <%= (new Date( elem.eventDate)).toLocaleString("en-SG", {timeStyle: 'short'}) %></td>
                 <td><%= elem.locationName %></td>
                 <td><%= elem.host %></td>

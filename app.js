@@ -248,8 +248,10 @@ app.get("/:activityID", (req, res) => {
     const activityID = req.params.activityID;
 
     Activity.findOne({_id: activityID}, (err, docs) => {
+        // console.log(docs);
         if (!err) {
             const eventItem = docs;
+
             var loc = [docs.locationName, docs.latitude, docs.longitude, 0];
             var locList = [];
             locList.push(loc);
