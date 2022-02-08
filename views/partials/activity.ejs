@@ -1,17 +1,17 @@
 <table class="table table-hover clickable-row">
     <thead>
         <tr>
-        <th scope="col">Date & Time</th>
-        <th scope="col">Location</th>
-        <th scope="col">Host</th>
-        <th scope="col">Sport</th>
+        <th scope="col" style="width: 25%">Date & Time</th>
+        <th scope="col" style="width: 25%">Location</th>
+        <th scope="col" style="width: 25%">Host</th>
+        <th scope="col" style="width: 25%">Sport</th>
         </tr>
     </thead>
     <tbody>
             <tr>
                 <td><%= (new Date( eventItem.eventDate)).toLocaleDateString("en-SG") %>, <%= (new Date( eventItem.eventDate)).toLocaleString("en-SG",{timeStyle:"short"}) %></td>
                 <td><%= eventItem.locationName %></td>
-                <td><%= eventItem.host %></td>
+                <td><a href="/viewprofile/<%= eventItem.hostID %>" class="blacklink"><%= eventItem.hostName %></a></td>
                 <td><%= eventItem.sport %></td>
             </tr>
     </tbody>

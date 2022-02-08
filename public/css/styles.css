@@ -9,6 +9,10 @@ body {
     font-weight: bold;
 }
 
+.blacklink {
+    color: black;
+}
+
 .btnpad {
     margin-left: 10px;
 }

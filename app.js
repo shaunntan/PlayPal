@@ -25,8 +25,9 @@ mongoose.connect(`mongodb+srv://shaunntan:${process.env.MONGOPASS}@cluster0.r0vq
 const session = require("express-session");
 const passport = require("passport");
 const passportLocalMongoose = require("passport-local-mongoose");
+const sessionsecret = process.env.SESSIONSECRET;
 app.use(session({
-    secret: "secret",
+    secret: sessionsecret,
     resave: false,
     saveUninitialized: false
 }));
@@ -53,21 +54,22 @@ const activitySchema = new mongoose.Schema({
     locationID: String,
     locationName: String,
     eventDate: Date,
-    host: String,
+    hostName: String,
     sport: String,
     latitude: Number,
     longitude: Number,
-    owner: String,
+    hostID: String,
     teammates: [String]
 });
 
 const joinedSchema = new mongoose.Schema({
     eventID: String,
     userID: String,
+    hostID: String,
     locationID: String,
     locationName: String,
     eventDate: Date,
-    host: String,
+    hostName: String,
     sport: String,
     latitude: Number,
     longitude: Number,
@@ -109,6 +111,7 @@ app.get("/", (req, res) => {
         if (!err) {
             var sportList = [];
             var locList = [];
+            console.log(docs);
             docs.forEach((elem) => {
                 sportList.push(elem.sport);
                 var loc = [elem.locationName, elem.latitude, elem.longitude, 0];
@@ -155,7 +158,7 @@ app.route("/register")
         res.render("register");
     })
     .post((req, res) => {
-        const username = req.body.registerEmail
+        const username = req.body.registerEmail;
         const firstName = req.body.registerFirstName;
         const lastName = req.body.registerLastName;
         User.register(new User({username: username, firstName: firstName, lastName: lastName}), req.body.registerPassword, (err, user) => {
@@ -206,11 +209,11 @@ app.post("/submit", (req, res) => {
                 locationID: locationID,
                 locationName: locationName,
                 eventDate: eventDate,
-                host: host,
+                hostName: host,
                 sport: sport,
                 latitude: lat,
                 longitude: long,
-                owner: req.user._id
+                hostID: req.user._id
             })
 
             activity.save().then(() => {res.redirect("/");});
@@ -223,7 +226,7 @@ app.get("/profile", (req,res) => {
     const user = getUser(req)[0];
     const userID = getUser(req)[1];
     if (req.isAuthenticated()) {
-        Activity.find({owner: userID}).sort('eventDate').exec((err, docs) => {
+        Activity.find({hostID: userID}).sort('eventDate').exec((err, docs) => {
             if (!err) {
                 Joined.find({userID: userID}).sort('eventDate').exec((err, docs_) => {
                     var locList = [];
@@ -240,6 +243,22 @@ app.get("/profile", (req,res) => {
     };
 });
 
+app.get("/viewprofile/:userID", (req,res) => {
+    const user = getUser(req)[0];
+    // const userID = getUser(req)[1];
+    // if (req.isAuthenticated()) {
+        const findUser = req.params.userID;
+
+        User.findOne({_id: findUser}, (err, docs) => {
+            if (!err) {
+                    console.log(docs);
+                    res.render("viewprofile", {foundUser: docs, user: user});
+            };
+        });
+    //     } else {
+    //     res.redirect("/")
+    // };
+});
 
 // GET page for specific activity
 app.get("/:activityID", (req, res) => {
@@ -271,10 +290,11 @@ app.post("/jointeam", (req,res) => {
         const joining = new Joined({
             eventID: activityID,
             userID: userID,
+            hostID: docs.hostID,
             locationID: docs.locationID,
             locationName: docs.locationName,
             eventDate: docs.eventDate,
-            host: docs.host,
+            hostName: docs.hostName,
             sport: docs.sport,
             latitude: docs.latitude,
             longitude: docs.longitude,
