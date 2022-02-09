@@ -158,17 +158,19 @@ app.route("/register")
         res.render("register");
     })
     .post((req, res) => {
-        const username = req.body.registerEmail;
+        const username = req.body.username;
         const firstName = req.body.registerFirstName;
         const lastName = req.body.registerLastName;
-        User.register(new User({username: username, firstName: firstName, lastName: lastName}), req.body.registerPassword, (err, user) => {
+        User.register(new User({username: username, firstName: firstName, lastName: lastName}), req.body.password, (err, user) => {
             if (err) {
-                console.log(err);
+                // console.log(err);
                 res.redirect("/register");
             } else {
-                console.log(user);
-
-                res.redirect("/signin");
+                // console.log(user);
+                passport.authenticate("local")(req, res, function(){
+                    res.redirect("/");
+                });
+                // res.redirect("/signin");
             }
         })
     })
