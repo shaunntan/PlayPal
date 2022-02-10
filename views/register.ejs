@@ -1,30 +1,44 @@
 <%- include('partials/header-nonav') %>
+
   <div class="row text-center justify-content-md-center">
-    <div class="col-md-4 ">
-      <form class="form-signin" action="/register" method="post">
+    <div class="col-xl-4 col-lg-6 col-md-8">
+      
         <p class="font-weight-bold loginlogo" href="/signin">PlayPal <i class="fas fa-volleyball-ball"></i></p>
-        <h1 class="h3 mb-3 fw-normal">Please register with your email and preferred password.</h1>
+        <h1 class="h3 mb-3 fw-normal">Register!</h1>
+    </div>
+  </div>
+
+<form class="form-signin" action="/uploadprofilepic" method="post">  
+  <!-- <div class="row text-center justify-content-md-center mb-4">
+    <div class="col-xl-2 col-lg-3 col-md-4 align-self-center">
+      <p class="mb-2" style="text-align:left;">Choose a Profile Picture</p>
+      <input name="profilepic" type="file" class="form-control mb-2" id="floatingProfilePic" accept="image/gif, image/jpeg, image/png" title="Select a Profile Picture" onchange="readImg(this);">          
+    </div>
+    <div class="col-xl-2 col-lg-3 col-md-4">
+      <img id="showProfilePic" style="border-radius: 100%;" src="#" alt="" />
+    </div> 
+  </div> -->
+  <div class="row text-center justify-content-md-center">
+    <div class="col-xl-4 col-lg-6 col-md-8">
         <div class="form-floating">
-          <input name="registerFirstName" class="form-control" id="floatingInput">
-          <label for="floatingInput">First Name</label>
+          <input name="registerFirstName" class="form-control" id="floatingFirstName" placeholder="">
+          <label for="floatingFirstName">First Name</label>
         </div>
         <div class="form-floating">
-          <input name="registerLastName" class="form-control" id="floatingInput">
-          <label for="floatingInput">Last Name</label>
+          <input name="registerLastName" class="form-control" id="floatingLastName" placeholder="">
+          <label for="floatingLastName">Last Name</label>
         </div>
         <div class="form-floating">
-          <input type="email" name="username" class="form-control" id="floatingInput" placeholder="name@example.com">
+          <input type="email" name="username" class="form-control" id="floatingInput" placeholder="">
           <label for="floatingInput">Email address</label>
         </div>
         <div class="form-floating">
-          <input type="password" name="password" class="form-control" id="floatingPassword" placeholder="Password">
+          <input type="password" name="password" class="form-control" id="floatingPassword" placeholder="">
           <label for="floatingPassword">Password</label>
         </div>
     
         <button class="w-100 btn btn-lg btn-primary mt-2" type="submit">Register!</button>
-
-      </form>
-    </div>
+    </div> 
   </div>
-   
+</form> 
 <%- include('partials/footer') %>

@@ -1,5 +1,7 @@
 // load environment variables
 require('dotenv').config();
+const AWS = require("aws-sdk");
+const S3 = require('aws-sdk/clients/s3');
 
 // use express as web app framework 
 const express = require("express");
@@ -24,7 +26,7 @@ mongoose.connect(`mongodb+srv://shaunntan:${process.env.MONGOPASS}@cluster0.r0vq
 // authentication
 const session = require("express-session");
 const passport = require("passport");
-const passportLocalMongoose = require("passport-local-mongoose");
+// const passportLocalMongoose = require("passport-local-mongoose");
 const sessionsecret = process.env.SESSIONSECRET;
 app.use(session({
     secret: sessionsecret,
@@ -34,58 +36,15 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-var userSchema = new mongoose.Schema({
-    username: String,
-    firstName: String,
-    lastName: String,
-    password: String
-});
-
-userSchema.plugin(passportLocalMongoose);
-
-const User = new mongoose.model('user', userSchema);
-
+const User = require("./models/users");
 passport.use(User.createStrategy());
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
-// create activity schema
-const activitySchema = new mongoose.Schema({
-    locationID: String,
-    locationName: String,
-    eventDate: Date,
-    hostName: String,
-    sport: String,
-    latitude: Number,
-    longitude: Number,
-    hostID: String,
-    teammates: [String]
-});
-
-const joinedSchema = new mongoose.Schema({
-    eventID: String,
-    userID: String,
-    hostID: String,
-    locationID: String,
-    locationName: String,
-    eventDate: Date,
-    hostName: String,
-    sport: String,
-    latitude: Number,
-    longitude: Number,
-});
-
-//create facility schema
-const facilitySchema = new mongoose.Schema({
-    name: String,
-    latitude: Number,
-    longitude: Number
-    });
-
 // create mongoose models
-const Activity = mongoose.model('activity', activitySchema);
-const Facility = mongoose.model('facility', facilitySchema);
-const Joined = mongoose.model('join', joinedSchema);
+const Activity = require("./models/activity");
+const Joined = require("./models/joined");
+const Facility = require("./models/facility");
 
 function getUser(req) {
     var user = []; 
@@ -100,7 +59,6 @@ function getUser(req) {
 };
 
 
-
 // GET home route
 app.get("/", (req, res) => {
 
@@ -111,7 +69,7 @@ app.get("/", (req, res) => {
         if (!err) {
             var sportList = [];
             var locList = [];
-            console.log(docs);
+            // console.log(docs);
             docs.forEach((elem) => {
                 sportList.push(elem.sport);
                 var loc = [elem.locationName, elem.latitude, elem.longitude, 0];
@@ -158,6 +116,7 @@ app.route("/register")
         res.render("register");
     })
     .post((req, res) => {
+        console.log(req.body);
         const username = req.body.username;
         const firstName = req.body.registerFirstName;
         const lastName = req.body.registerLastName;
@@ -176,6 +135,63 @@ app.route("/register")
     })
 ;
 
+app.route("/uploadprofilepic")
+    .get((req, res) => {
+        
+        AWS.config.update({ 
+            accessKeyId: `${process.env.AWS_ACCESS_KEY_ID}`,
+            secretAccessKey: `${process.env.AWS_SECRET_ACCESS_KEY}`,
+            region: 'ap-southeast-1',
+            signatureVersion: 'v4'
+        });
+    
+        const s3 = new AWS.S3({ apiVersion: '2006-03-01', signatureVersion: 'v4' });
+        const myBucket = 'shaunntestbucket';
+        // const myKey = ':DDDDDD'
+        const signedUrlExpireSeconds = 60 * 5;
+    
+        // const url = s3.getSignedUrl('putObject', {
+        //     Bucket: myBucket,
+        //     Key: "profilepictures/cat.jpg",
+        //     // ContentType: 'image/jpeg',
+        //     Expires: signedUrlExpireSeconds
+        // });
+
+        const post = s3.createPresignedPost({
+            Bucket: myBucket,
+            // Key: "profilepictures/cat.jpg",
+            // ContentType: 'image/jpeg',
+            Conditions: [
+                ['starts-with', '$key', 'profilepictures/']
+              ],
+            Expires: signedUrlExpireSeconds
+        },(err, data) => {
+                const d = JSON.parse(JSON.stringify(data));
+                console.log(d);
+
+                const credential = d.fields['X-Amz-Credential'];
+                const algorithm = d.fields['X-Amz-Algorithm'];
+                const date = d.fields['X-Amz-Date'];
+                const policy = d.fields['Policy'];
+                const signature = d.fields['X-Amz-Signature'];
+                res.render("uploadpic", { credential: credential, date: date, policy: policy, signature: signature, algorithm: algorithm});    
+
+            // const urlParams = new URLSearchParams(url);
+            // const credential = d.fields['X-Amz-Credential'];
+            // const date = urlParams.get('X-Amz-Date');
+            // const expires = urlParams.get('X-Amz-Expires');
+            // const signature = urlParams.get('X-Amz-Signature');
+            // const signedHeaders = urlParams.get('X-Amz-SignedHeaders');
+            // console.log(urlParams)
+            // console.log(a);
+            // for (const [k,v] of urlParams) {console.log(k); console.log(v)};
+        });
+    
+    })
+    .post((req, res) => {
+        console.log(req.body);
+    })
+;
 
 // GET add new activity page
 app.get("/host", (req, res) => {
@@ -263,7 +279,7 @@ app.get("/viewprofile/:userID", (req,res) => {
 });
 
 // GET page for specific activity
-app.get("/:activityID", (req, res) => {
+app.get("/activity/:activityID", (req, res) => {
     const user = getUser(req)[0];
     const userID = getUser(req)[1];
     const activityID = req.params.activityID;
@@ -307,5 +323,33 @@ app.post("/jointeam", (req,res) => {
 });
 
 
-app.listen(PORT);   
+
+app.listen(PORT, () => {
+//     const utf8 = require("utf8");
+//     const base64 = require("base-64");
+
+// var policyString = { "expiration": "2015-12-30T12:00:00.000Z",
+// "conditions": [
+//   {"bucket": "sigv4examplebucket"},
+//   ["starts-with", "$key", "user/user1/"],
+//   {"acl": "public-read"},
+//   {"success_action_redirect": "http://sigv4examplebucket.s3.amazonaws.com/successful_upload.html"},
+//   ["starts-with", "$Content-Type", "image/"],
+//   {"x-amz-meta-uuid": "14365123651274"},
+//   {"x-amz-server-side-encryption": "AES256"},
+//   ["starts-with", "$x-amz-meta-tag", ""],
+
+//   {"x-amz-credential": "AKIAIOSFODNN7EXAMPLE/20151229/us-east-1/s3/aws4_request"},
+//   {"x-amz-algorithm": "AWS4-HMAC-SHA256"},
+//   {"x-amz-date": "20151229T000000Z" }
+// ]
+// }
+// var policyBytes = utf8.encode(policyString);
+// var stringToSign = base64.encode(policyBytes);
+// console.log(policyBytes);
+
+// var b = new Buffer(policyString, 'base64')
+// var s = b.toString();
+// console.log(s);
+});   
 

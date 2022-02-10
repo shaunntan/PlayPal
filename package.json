@@ -11,6 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "aws-sdk": "^2.1071.0",
+    "base-64": "^1.0.0",
     "bcrypt": "^5.0.1",
     "body-parser": "^1.19.1",
     "dotenv": "^16.0.0",
@@ -22,6 +23,7 @@
     "passport": "^0.5.2",
     "passport-local": "^1.0.0",
     "passport-local-mongoose": "^6.1.0",
+    "utf8": "^3.0.0",
     "uuid": "^8.3.2"
   }
 }

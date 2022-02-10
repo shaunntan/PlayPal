@@ -44,3 +44,14 @@ function fillHostingForm() {
 
 };
 
+function readImg(input) {
+    if (input.files && input.files[0]) {
+      var reader = new FileReader();
+        console.log(input);
+      reader.onload = function (e) {
+        $('#showProfilePic').attr('src', e.target.result).width(150);
+      };
+  
+      reader.readAsDataURL(input.files[0]);
+    }
+  }
