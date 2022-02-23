@@ -1,15 +1,15 @@
 <%- include('partials/header') %>
 <div class="container-fluid">
     <div class="row">
-        <div class="col-md-12">
-            <h1 class="fw-bold text-center bottompad"><%= user %></h1>
-        </div>
-    </div>
-
-    <div class="row justify-content-md-center">
-
-       
         <div class="col-md-6 ">
+            <div class="row ">
+                <div class="text-center">
+                    <img src="<%= picUrl %>" id="profilePic" class="">
+                    <h1 class="fw-bold bottompad"><%= user %></h1>
+                </div>
+
+            </div>
+            
             <h3 class="fw-bold">Your Activities</h3>
             <h3 class="">Hosting</h3>
             <%- include('partials/listofactivities'); %>

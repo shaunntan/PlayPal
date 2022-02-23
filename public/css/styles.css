@@ -43,3 +43,8 @@ body {
 .sportselection-child {
     display: inline-block;
   }
+
+#profilePic {
+    border-radius: 100%;
+    width: 150px;
+}

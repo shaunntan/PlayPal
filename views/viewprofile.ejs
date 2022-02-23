@@ -1,7 +1,8 @@
 <%- include('partials/header') %>
 <div class="container-fluid">
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-6 text-center">
+            <img src="<%= picUrl %>" id="profilePic" alt="">
             <h1 class="fw-bold text-center bottompad"><%= [foundUser.firstName, foundUser.lastName].join(" ") %></h1>
         </div>
         <div class="col-md-6">

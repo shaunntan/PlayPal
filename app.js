@@ -1,7 +1,18 @@
 // load environment variables
 require('dotenv').config();
+
+// AWS
 const AWS = require("aws-sdk");
 const S3 = require('aws-sdk/clients/s3');
+AWS.config.update({ 
+    accessKeyId: `${process.env.AWS_ACCESS_KEY_ID}`,
+    secretAccessKey: `${process.env.AWS_SECRET_ACCESS_KEY}`,
+    region: 'ap-southeast-1',
+    signatureVersion: 'v4'
+});
+const s3 = new AWS.S3({ apiVersion: '2006-03-01', signatureVersion: 'v4' });
+const myBucket = 'shaunntestbucket';
+const signedUrlExpireSeconds = 60;
 
 // use express as web app framework 
 const express = require("express");
@@ -150,29 +161,9 @@ app.route("/uploadprofilepic")
                 const userid = user._id;
                 
                 passport.authenticate("local")(req, res, function(){
-                    AWS.config.update({ 
-                        accessKeyId: `${process.env.AWS_ACCESS_KEY_ID}`,
-                        secretAccessKey: `${process.env.AWS_SECRET_ACCESS_KEY}`,
-                        region: 'ap-southeast-1',
-                        signatureVersion: 'v4'
-                    });
                 
-                    const s3 = new AWS.S3({ apiVersion: '2006-03-01', signatureVersion: 'v4' });
-                    const myBucket = 'shaunntestbucket';
-                    // const myKey = ':DDDDDD'
-                    const signedUrlExpireSeconds = 60 * 5;
-                
-                    // const url = s3.getSignedUrl('putObject', {
-                    //     Bucket: myBucket,
-                    //     Key: "profilepictures/cat.jpg",
-                    //     // ContentType: 'image/jpeg',
-                    //     Expires: signedUrlExpireSeconds
-                    // });
-            
                     const post = s3.createPresignedPost({
                         Bucket: myBucket,
-                        // Key: "profilepictures/cat.jpg",
-                        // ContentType: 'image/jpeg',
                         Conditions: [
                             ['starts-with', '$key', 'profilepictures/'],
                             ['starts-with', '$success_action_redirect', 'http://localhost:4000/']
@@ -190,15 +181,6 @@ app.route("/uploadprofilepic")
                             const redirect = d.fields['success_action_redirect'];
                             res.render("uploadpic", { userid: userid, credential: credential, date: date, policy: policy, signature: signature, algorithm: algorithm, redirect:redirect});    
             
-                        // const urlParams = new URLSearchParams(url);
-                        // const credential = d.fields['X-Amz-Credential'];
-                        // const date = urlParams.get('X-Amz-Date');
-                        // const expires = urlParams.get('X-Amz-Expires');
-                        // const signature = urlParams.get('X-Amz-Signature');
-                        // const signedHeaders = urlParams.get('X-Amz-SignedHeaders');
-                        // console.log(urlParams)
-                        // console.log(a);
-                        // for (const [k,v] of urlParams) {console.log(k); console.log(v)};
                     });
                 });
             }
@@ -263,6 +245,10 @@ app.get("/profile", (req,res) => {
     const user = getUser(req)[0];
     const userID = getUser(req)[1];
     if (req.isAuthenticated()) {
+        var params = {Bucket: myBucket, Key: `profilepictures/${userID}.jpg`};
+        var url = s3.getSignedUrl('getObject', params);
+        // console.log('The URL is', url);
+
         Activity.find({hostID: userID}).sort('eventDate').exec((err, docs) => {
             if (!err) {
                 Joined.find({userID: userID}).sort('eventDate').exec((err, docs_) => {
@@ -271,7 +257,7 @@ app.get("/profile", (req,res) => {
                         var loc = [elem.locationName, elem.latitude, elem.longitude, 0];
                         locList.push(loc);
                     });
-                    res.render("profile", {eventList: docs, joinedList: docs_, locList: locList, user: user});
+                    res.render("profile", {eventList: docs, joinedList: docs_, locList: locList, user: user, picUrl: url});
                 });
             };
         });
@@ -286,10 +272,14 @@ app.get("/viewprofile/:userID", (req,res) => {
     // if (req.isAuthenticated()) {
         const findUser = req.params.userID;
 
+        var params = {Bucket: myBucket, Key: `profilepictures/${findUser}.jpg`};
+        var url = s3.getSignedUrl('getObject', params);
+        // console.log('The URL is', url);
+
         User.findOne({_id: findUser}, (err, docs) => {
             if (!err) {
-                    console.log(docs);
-                    res.render("viewprofile", {foundUser: docs, user: user});
+                    // console.log(docs);
+                    res.render("viewprofile", {foundUser: docs, user: user, picUrl: url});
             };
         });
     //     } else {
@@ -318,57 +308,35 @@ app.get("/activity/:activityID", (req, res) => {
 
 // POST join team!
 app.post("/jointeam", (req,res) => {
-    const activityID = req.body.activityid;
-    const userID = req.body.userid;
-    // console.log(activityID);
-    // console.log(userID);
-    Activity.updateOne({_id: activityID}, {$addToSet: {'teammates': userID}});
-    Activity.findOne({_id: activityID}, (err, docs) => {
-        const joining = new Joined({
-            eventID: activityID,
-            userID: userID,
-            hostID: docs.hostID,
-            locationID: docs.locationID,
-            locationName: docs.locationName,
-            eventDate: docs.eventDate,
-            hostName: docs.hostName,
-            sport: docs.sport,
-            latitude: docs.latitude,
-            longitude: docs.longitude,
-        });
-        joining.save().then(() => {res.redirect("/profile");});
+    if (req.isAuthenticated()) {
+        const activityID = req.body.activityid;
+        const userID = req.body.userid;
+        // console.log(activityID);
+        // console.log(userID);
+        Activity.updateOne({_id: activityID}, {$addToSet: {'teammates': userID}});
+        Activity.findOne({_id: activityID}, (err, docs) => {
+            const joining = new Joined({
+                eventID: activityID,
+                userID: userID,
+                hostID: docs.hostID,
+                locationID: docs.locationID,
+                locationName: docs.locationName,
+                eventDate: docs.eventDate,
+                hostName: docs.hostName,
+                sport: docs.sport,
+                latitude: docs.latitude,
+                longitude: docs.longitude,
+            });
+            joining.save().then(() => {res.redirect("/profile");});
 
-    });
+        });
+    } else {
+        res.redirect('/signin');
+    }
 });
 
 
 
 app.listen(PORT, () => {
-//     const utf8 = require("utf8");
-//     const base64 = require("base-64");
-
-// var policyString = { "expiration": "2015-12-30T12:00:00.000Z",
-// "conditions": [
-//   {"bucket": "sigv4examplebucket"},
-//   ["starts-with", "$key", "user/user1/"],
-//   {"acl": "public-read"},
-//   {"success_action_redirect": "http://sigv4examplebucket.s3.amazonaws.com/successful_upload.html"},
-//   ["starts-with", "$Content-Type", "image/"],
-//   {"x-amz-meta-uuid": "14365123651274"},
-//   {"x-amz-server-side-encryption": "AES256"},
-//   ["starts-with", "$x-amz-meta-tag", ""],
-
-//   {"x-amz-credential": "AKIAIOSFODNN7EXAMPLE/20151229/us-east-1/s3/aws4_request"},
-//   {"x-amz-algorithm": "AWS4-HMAC-SHA256"},
-//   {"x-amz-date": "20151229T000000Z" }
-// ]
-// }
-// var policyBytes = utf8.encode(policyString);
-// var stringToSign = base64.encode(policyBytes);
-// console.log(policyBytes);
-
-// var b = new Buffer(policyString, 'base64')
-// var s = b.toString();
-// console.log(s);
 });   
 
