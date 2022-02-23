@@ -122,10 +122,10 @@ app.route("/register")
         const lastName = req.body.registerLastName;
         User.register(new User({username: username, firstName: firstName, lastName: lastName}), req.body.password, (err, user) => {
             if (err) {
-                // console.log(err);
+                console.log(err);
                 res.redirect("/register");
             } else {
-                // console.log(user);
+                console.log(user);
                 passport.authenticate("local")(req, res, function(){
                     res.redirect("/");
                 });
@@ -136,61 +136,80 @@ app.route("/register")
 ;
 
 app.route("/uploadprofilepic")
-    .get((req, res) => {
-        
-        AWS.config.update({ 
-            accessKeyId: `${process.env.AWS_ACCESS_KEY_ID}`,
-            secretAccessKey: `${process.env.AWS_SECRET_ACCESS_KEY}`,
-            region: 'ap-southeast-1',
-            signatureVersion: 'v4'
-        });
-    
-        const s3 = new AWS.S3({ apiVersion: '2006-03-01', signatureVersion: 'v4' });
-        const myBucket = 'shaunntestbucket';
-        // const myKey = ':DDDDDD'
-        const signedUrlExpireSeconds = 60 * 5;
-    
-        // const url = s3.getSignedUrl('putObject', {
-        //     Bucket: myBucket,
-        //     Key: "profilepictures/cat.jpg",
-        //     // ContentType: 'image/jpeg',
-        //     Expires: signedUrlExpireSeconds
-        // });
-
-        const post = s3.createPresignedPost({
-            Bucket: myBucket,
-            // Key: "profilepictures/cat.jpg",
-            // ContentType: 'image/jpeg',
-            Conditions: [
-                ['starts-with', '$key', 'profilepictures/']
-              ],
-            Expires: signedUrlExpireSeconds
-        },(err, data) => {
-                const d = JSON.parse(JSON.stringify(data));
-                console.log(d);
-
-                const credential = d.fields['X-Amz-Credential'];
-                const algorithm = d.fields['X-Amz-Algorithm'];
-                const date = d.fields['X-Amz-Date'];
-                const policy = d.fields['Policy'];
-                const signature = d.fields['X-Amz-Signature'];
-                res.render("uploadpic", { credential: credential, date: date, policy: policy, signature: signature, algorithm: algorithm});    
-
-            // const urlParams = new URLSearchParams(url);
-            // const credential = d.fields['X-Amz-Credential'];
-            // const date = urlParams.get('X-Amz-Date');
-            // const expires = urlParams.get('X-Amz-Expires');
-            // const signature = urlParams.get('X-Amz-Signature');
-            // const signedHeaders = urlParams.get('X-Amz-SignedHeaders');
-            // console.log(urlParams)
-            // console.log(a);
-            // for (const [k,v] of urlParams) {console.log(k); console.log(v)};
-        });
-    
-    })
     .post((req, res) => {
-        console.log(req.body);
+        
+        const username = req.body.username;
+        const firstName = req.body.registerFirstName;
+        const lastName = req.body.registerLastName;
+        User.register(new User({username: username, firstName: firstName, lastName: lastName}), req.body.password, (err, user) => {
+            if (err) {
+                console.log(err);
+                res.redirect("/register");
+            } else {
+                console.log(user);
+                const userid = user._id;
+                
+                passport.authenticate("local")(req, res, function(){
+                    AWS.config.update({ 
+                        accessKeyId: `${process.env.AWS_ACCESS_KEY_ID}`,
+                        secretAccessKey: `${process.env.AWS_SECRET_ACCESS_KEY}`,
+                        region: 'ap-southeast-1',
+                        signatureVersion: 'v4'
+                    });
+                
+                    const s3 = new AWS.S3({ apiVersion: '2006-03-01', signatureVersion: 'v4' });
+                    const myBucket = 'shaunntestbucket';
+                    // const myKey = ':DDDDDD'
+                    const signedUrlExpireSeconds = 60 * 5;
+                
+                    // const url = s3.getSignedUrl('putObject', {
+                    //     Bucket: myBucket,
+                    //     Key: "profilepictures/cat.jpg",
+                    //     // ContentType: 'image/jpeg',
+                    //     Expires: signedUrlExpireSeconds
+                    // });
+            
+                    const post = s3.createPresignedPost({
+                        Bucket: myBucket,
+                        // Key: "profilepictures/cat.jpg",
+                        // ContentType: 'image/jpeg',
+                        Conditions: [
+                            ['starts-with', '$key', 'profilepictures/'],
+                            ['starts-with', '$success_action_redirect', 'http://localhost:4000/']
+                          ],
+                        Expires: signedUrlExpireSeconds
+                    },(err, data) => {
+                            const d = JSON.parse(JSON.stringify(data));
+                            console.log(d);
+            
+                            const credential = d.fields['X-Amz-Credential'];
+                            const algorithm = d.fields['X-Amz-Algorithm'];
+                            const date = d.fields['X-Amz-Date'];
+                            const policy = d.fields['Policy'];
+                            const signature = d.fields['X-Amz-Signature'];
+                            const redirect = d.fields['success_action_redirect'];
+                            res.render("uploadpic", { userid: userid, credential: credential, date: date, policy: policy, signature: signature, algorithm: algorithm, redirect:redirect});    
+            
+                        // const urlParams = new URLSearchParams(url);
+                        // const credential = d.fields['X-Amz-Credential'];
+                        // const date = urlParams.get('X-Amz-Date');
+                        // const expires = urlParams.get('X-Amz-Expires');
+                        // const signature = urlParams.get('X-Amz-Signature');
+                        // const signedHeaders = urlParams.get('X-Amz-SignedHeaders');
+                        // console.log(urlParams)
+                        // console.log(a);
+                        // for (const [k,v] of urlParams) {console.log(k); console.log(v)};
+                    });
+                });
+            }
+        })
+
+
+    
     })
+    // .post((req, res) => {
+    //     console.log(req.body);
+    // })
 ;
 
 // GET add new activity page

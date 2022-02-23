@@ -13,15 +13,15 @@
   <div class="row text-center justify-content-md-center mb-4">
     <div class="col-xl-2 col-lg-3 col-md-4 align-self-center">
       <!-- <p class="mb-2" style="text-align:left;">Choose a Profile Picture</p> -->
-      <input type="hidden"   name="key" value="profilepictures/cat.jpg" />
+      <input type="hidden"   name="key" value="profilepictures/<%= userid %>.jpg" />
 
       <input type="hidden"   name="X-Amz-Credential" value="<%= credential %>" />
       <input type="hidden"   name="X-Amz-Algorithm" value="<%= algorithm %>" />
       <input type="hidden"   name="X-Amz-Date" value="<%= date %>" />
-      <input type="hidden" name="Policy" value="<%= policy %>" />
+      <input type="hidden"   name="Policy" value="<%= policy %>" />
 
       <input type="hidden"   name="X-Amz-Signature" value="<%= signature %>" />
-
+      <input type="hidden"   name="success_action_redirect" value="http://localhost:4000/">
       <input name="file" type="file" class="form-control mb-2" id="floatingProfilePic" accept="image/gif, image/jpeg, image/png" title="Select a Profile Picture" onchange="readImg(this);">          
     </div>
   </div>
