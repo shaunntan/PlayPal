@@ -58,64 +58,69 @@ const Activity = require("./models/activity");
 const Joined = require("./models/joined");
 const Facility = require("./models/facility");
 
-function getUser(req) {
-    var user = []; 
-    var id = [];  
-    if (req.isAuthenticated()) {
-        const name = [req.user.firstName, req.user.lastName].join(' ');
-        user.push(name);
-        id.push(req.user._id);
-        // console.log(id);
-    };
-    return [user, id];
-};
+const getUser = require("./routes/getuser");
+
+// function getUser(req) {
+//     var user = []; 
+//     var id = [];  
+//     if (req.isAuthenticated()) {
+//         const name = [req.user.firstName, req.user.lastName].join(' ');
+//         user.push(name);
+//         id.push(req.user._id);
+//         // console.log(id);
+//     };
+//     return [user, id];
+// };
 
 
 // GET home route
-app.get("/", (req, res) => {
+require('./routes/home')(app);
 
-    // check auth status and pass username
-    const user = getUser(req)[0];
+// app.get("/", (req, res) => {
 
-    Activity.find({}).sort('eventDate').exec((err, docs) => {
-        if (!err) {
-            var sportList = [];
-            var locList = [];
-            // console.log(docs);
-            docs.forEach((elem) => {
-                sportList.push(elem.sport);
-                var loc = [elem.locationName, elem.latitude, elem.longitude, 0];
-                locList.push(loc);
-            });
-            const uniqueSportList = [...new Set(sportList)];
-            res.render("home", {eventList: docs, uniqueSportList: uniqueSportList, locList: locList, user: user});
-        }
-    });
-});
+//     // check auth status and pass username
+//     const user = getUser(req)[0];
+
+//     Activity.find({}).sort('eventDate').exec((err, docs) => {
+//         if (!err) {
+//             var sportList = [];
+//             var locList = [];
+//             // console.log(docs);
+//             docs.forEach((elem) => {
+//                 sportList.push(elem.sport);
+//                 var loc = [elem.locationName, elem.latitude, elem.longitude, 0];
+//                 locList.push(loc);
+//             });
+//             const uniqueSportList = [...new Set(sportList)];
+//             res.render("home", {eventList: docs, uniqueSportList: uniqueSportList, locList: locList, user: user});
+//         }
+//     });
+// });
 
 // GET signin page needs work
-app.route("/signin")
-    .get((req, res) => {
-        res.render("signin");
-    })
-    .post((req, res) => {
-        const user = new User({
-            username: req.body.username,
-            password: req.body.password
-        })
-        // console.log(user);
-        req.login(user, (err) => {
-            if (err) {
-                console.log(err);
-            } else {
-                passport.authenticate("local")(req, res, function(){
-                    res.redirect("/");
-                });
-            }
+require('./routes/signin')(app, passport);
+// app.route("/signin")
+//     .get((req, res) => {
+//         res.render("signin");
+//     })
+//     .post((req, res) => {
+//         const user = new User({
+//             username: req.body.username,
+//             password: req.body.password
+//         })
+//         // console.log(user);
+//         req.login(user, (err) => {
+//             if (err) {
+//                 console.log(err);
+//             } else {
+//                 passport.authenticate("local")(req, res, function(){
+//                     res.redirect("/");
+//                 });
+//             }
 
-        });
-    })    
-    ;
+//         });
+//     })    
+//     ;
 
 app.get("/logout", (req, res) => {
     req.logout();
