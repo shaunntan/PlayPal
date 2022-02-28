@@ -10,8 +10,9 @@ AWS.config.update({
     region: 'ap-southeast-1',
     signatureVersion: 'v4'
 });
+const ses = new AWS.SES({apiVersion: '2010-12-01'});
 const s3 = new AWS.S3({ apiVersion: '2006-03-01', signatureVersion: 'v4' });
-const myBucket = 'shaunntestbucket';
+const myBucket = 'cs5224-playpal';
 const signedUrlExpireSeconds = 60;
 
 // use express as web app framework 
@@ -159,9 +160,34 @@ app.route("/uploadprofilepic")
             } else {
                 console.log(user);
                 const userid = user._id;
+
+                // Send registration email using AWS SES upon successful registration.
+                const usertag = userid.toString();
+                var emailparams = {
+                    Destination: {
+                        BccAddresses: [],
+                        CcAddresses: [],
+                        // ToAddresses: [username]
+                        ToAddresses: ['cs5224m5@comp.nus.edu.sg'] // Account is in sandbox mode, can only send to and from verified addresses.
+                    },
+                    Message: {
+                        Body: {
+                            Html: {Charset: 'UTF-8', Data: 'Testing HTML Body.'},
+                            Text: {Charset: 'UTF-8', Data: 'Testing Text Body.'},
+                        },
+                        Subject: {Charset: 'UTF-8', Data: 'Testing Subject.'}
+                    },
+                    Source: 'cs5224m5@comp.nus.edu.sg',
+                    Tags: [{Name: 'registration', Value: usertag}]
+                };
+                ses.sendEmail(emailparams, function(err, data) {
+                    if (err) console.log(err, err.stack); // an error occurred
+                    else     console.log(data);           // successful response
+                  });
                 
+                // authenticate session and load upload profile pic page.
                 passport.authenticate("local")(req, res, function(){
-                
+                    
                     const post = s3.createPresignedPost({
                         Bucket: myBucket,
                         Conditions: [
@@ -172,14 +198,15 @@ app.route("/uploadprofilepic")
                     },(err, data) => {
                             const d = JSON.parse(JSON.stringify(data));
                             console.log(d);
-            
+
+                            const bucket = d.fields['bucket'];
                             const credential = d.fields['X-Amz-Credential'];
                             const algorithm = d.fields['X-Amz-Algorithm'];
                             const date = d.fields['X-Amz-Date'];
                             const policy = d.fields['Policy'];
                             const signature = d.fields['X-Amz-Signature'];
                             const redirect = d.fields['success_action_redirect'];
-                            res.render("uploadpic", { userid: userid, credential: credential, date: date, policy: policy, signature: signature, algorithm: algorithm, redirect:redirect});    
+                            res.render("uploadpic", { bucket: bucket, userid: userid, credential: credential, date: date, policy: policy, signature: signature, algorithm: algorithm, redirect:redirect});    
             
                     });
                 });
