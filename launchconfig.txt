@@ -1,9 +1,23 @@
+Use this AMI: Amazon Linux 2 AMI (HVM) - Kernel 5.10, SSD Volume Type - ami-0db78d64e83cf051e (64-bit x86)
+
+# install node using this
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.34.0/install.sh | bash
 . ~/.nvm/nvm.sh
 nvm install node
 
+# install git as the AMI does not come with it
 sudo yum install git -y
 
+# clone PlayPal from git
+git clone https://github.com/shaunntan/PlayPal.git
 cd PlayPal
 
+# generate environment variables file for dot-env
+# environment variables are placed in AWS Systems Manager Parameter Store
 sh ./loadenv.sh
+
+# install node.js dependencies
+npm install
+
+# run server on port 4000
+node app.js
