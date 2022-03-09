@@ -1,0 +1,31 @@
+<%- include('partials/header') %>
+<div class="container-fluid mt-4">
+    <div class="row justify-content-md-center">
+        <div class="col-md-6">
+            <h3>Leave a Review! </h3>
+            <%- include('partials/activity'); %>
+            <form action="/leavereview/<%= activityID %>" method="post">
+                <input type="hidden" name="hostid" value="<%= eventItem.hostID %>">
+                <input type="hidden" name="activityid" value="<%= activityID %>">
+                <label for="Rating">Rate the Host for this Event</label>
+                <select class="form-control" id="Rating" name="rating">
+                  <option>1</option>
+                  <option>2</option>
+                  <option>3</option>
+                  <option>4</option>
+                  <option>5</option>
+                </select>
+                <label for="reviewtext">Your Review</label>
+                <textarea class="form-control" id="reviewtext" name="reviewtext" rows="3"></textarea>
+                <button class="btn btn-primary mt-3" type="submit">Submit!</button>
+            </form>
+
+
+
+        </div>
+        <div class="col-md-6 align-self-center text-center">
+            <%- include('partials/map') %>
+        </div>
+    </div>
+</div>
+<%- include('partials/footer') %>

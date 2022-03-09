@@ -57,7 +57,6 @@ passport.deserializeUser(User.deserializeUser());
 const Activity = require("./models/activity");
 const Joined = require("./models/joined");
 const Facility = require("./models/facility");
-
 const getUser = require("./routes/getuser");
 
 // routes
@@ -72,7 +71,7 @@ require('./routes/profile')(app, s3, myBucket);
 require('./routes/viewprofile')(app, s3, myBucket);
 require('./routes/viewactivity')(app);
 require('./routes/jointeam')(app);
-
+require('./routes/leavereview')(app);
 
 app.listen(PORT, () => {
 });   

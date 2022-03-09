@@ -1,4 +1,4 @@
-<table class="table table-hover clickable-row" >
+<table class="table table-hover clickable-row " >
     <thead>
         <tr>
         <th scope="col" style="width: 25%">Date & Time</th>
@@ -14,6 +14,9 @@
                 <td><%= elem.locationName %></td>
                 <td><a href="/viewprofile/<%= elem.hostID %>" class="blacklink"><%= elem.hostName %></a></td>
                 <td><%= elem.sport %></td>
+                <td><form action="/leavereview/<%= elem.eventID %>" method="get">
+                    <button class="btn btn-primary mb-3" type="submit">Review!</button>
+                </form>
             </tr>
             <% i++ ; %>
         <% }); %>

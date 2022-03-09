@@ -1,5 +1,6 @@
 const getUser = require("./getuser");
 const Activity = require("../models/activity");
+const Joined = require("../models/joined"); 
 
 module.exports = function(app){
     app.post("/jointeam", (req,res) => {
