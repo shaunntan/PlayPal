@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const review = new mongoose.Schema({
     activityID: String,
     reviewerID: String,
+    reviewerName: String,
     date: Date,
     rating: Number,
     review: String

@@ -31,7 +31,7 @@ module.exports = function(app){
             const user = getUser(req)[0];
             const userID = getUser(req)[1].toString();
             const activityID = req.params.activityID;
-            
+            const reviewerName = req.body.reviewername;
 
             const review = {}
             Activity.findOne({_id: activityID}, (err,docs) => {
@@ -45,6 +45,7 @@ module.exports = function(app){
                     const review = {
                         'activityID': activityID,
                         'reviewerID': userID,
+                        'reviewerName': reviewerName,
                         'date': reviewDate,
                         'rating': rating,
                         'review': reviewText
