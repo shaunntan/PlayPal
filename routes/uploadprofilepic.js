@@ -1,19 +1,27 @@
 const getUser = require("./getuser");
 const User = require("../models/users");
 
-module.exports = function(app, passport, ses, s3, myBucket){
+module.exports = function(app, passport, ses, s3, myBucket, signedUrlExpireSeconds){
     app.route("/uploadprofilepic")
     .post((req, res) => {
-        
+        // console.log(req.body);
         const username = req.body.username;
         const firstName = req.body.registerFirstName;
         const lastName = req.body.registerLastName;
-        User.register(new User({username: username, firstName: firstName, lastName: lastName}), req.body.password, (err, user) => {
+        const userAge = req.body.userAge;
+        const userLocation = req.body.userLocation;
+        const userPreferredTime = req.body.userPreferredTime;
+        const userPreferredDay = req.body.userPreferredDay;
+        const favSport = req.body.favSport;
+
+        User.register(new User({username: username, firstName: firstName, lastName: lastName, 
+                                userAge: userAge, userLocation: userLocation, userPreferredTime: userPreferredTime, 
+                                userPreferredDay: userPreferredDay, favSport: favSport}), req.body.password, (err, user) => {
             if (err) {
                 console.log(err);
                 res.redirect("/register");
             } else {
-                console.log(user);
+                // console.log(user);
                 const userid = user._id;
 
                 // Send registration email using AWS SES upon successful registration.

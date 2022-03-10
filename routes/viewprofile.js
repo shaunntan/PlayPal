@@ -1,6 +1,8 @@
 const getUser = require("./getuser");
 const User = require("../models/users");
 const Review = require("../models/reviews");
+const Activity = require("../models/activity");
+const Joined = require("../models/joined");
 
 module.exports = function(app, s3, myBucket){
     app.get("/viewprofile/:userID", (req,res) => {
@@ -17,8 +19,14 @@ module.exports = function(app, s3, myBucket){
                 if (!usererr) {
                         Review.findOne({userID: findUser}, (err, reviewdocs) => {
                             if (!err) {
-                                // console.log(reviewdocs);
-                                res.render("viewprofile", {foundUser: userdocs, reviews: reviewdocs, user: user, picUrl: url});
+                                // console.log(userdocs);
+                                Activity.find({hostID: findUser}).sort('eventDate').exec((activityerr, activitydocs) => {
+                                    if (!activityerr) {
+                                        Joined.find({userID: findUser}).sort('eventDate').exec((joinederr, joineddocs) => {
+                                            res.render("viewprofile", {foundUser: userdocs, reviews: reviewdocs, eventList: activitydocs, eventList2: joineddocs, user: user, picUrl: url});
+                                        });
+                                    }
+                                });
                             };
                         });
                 };

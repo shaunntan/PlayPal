@@ -4,10 +4,19 @@
         <div class="col-md-6 text-center">
             <img src="<%= picUrl %>" id="profilePic" alt="">
             <h1 class="fw-bold text-center bottompad"><%= [foundUser.firstName, foundUser.lastName].join(" ") %></h1>
+            <p><b>Age:</b> <%= foundUser.userAge%></p>
+            <p><b>Preferred Location:</b> <%= foundUser.userLocation%></p>
+            <p><b>Preferred Day:</b> <%= foundUser.userPreferredDay.join(", ")%></p>
+            <p><b>Preferred Day:</b> <%= foundUser.userPreferredTime.join(", ")%></p>
+            <p><b>Favourite Sports:</b> <%= foundUser.favSport%></p>
         </div>
         <div class="col-md-6">
             <h3 class="fw-bold">Reviews</h3>
             <%- include('partials/listofreviews'); %>
+            <h3 class="fw-bold">Hosting</h3>
+            <%- include('partials/listofactivities'); %>
+            <h3 class="fw-bold">Joined</h3>
+            <%- include('partials/listofactivities2'); %>
         </div>
     </div>
 </div>

@@ -64,7 +64,7 @@ require('./routes/home')(app);
 require('./routes/signin')(app, passport);
 require('./routes/logout')(app);
 require('./routes/register')(app, passport);
-require('./routes/uploadprofilepic')(app, passport, ses, s3, myBucket);
+require('./routes/uploadprofilepic')(app, passport, ses, s3, myBucket, signedUrlExpireSeconds);
 require('./routes/host')(app);
 require('./routes/submit')(app);
 require('./routes/profile')(app, s3, myBucket);

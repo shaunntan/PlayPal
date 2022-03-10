@@ -18,7 +18,7 @@
       <img id="showProfilePic" style="border-radius: 100%;" src="#" alt="" />
     </div> 
   </div> -->
-  <div class="row text-center justify-content-md-center">
+  <div class="row justify-content-md-center">
     <div class="col-xl-4 col-lg-6 col-md-8">
         <div class="form-floating">
           <input name="registerFirstName" class="form-control" id="floatingFirstName" placeholder="">
@@ -36,7 +36,40 @@
           <input type="password" name="password" class="form-control" id="floatingPassword" placeholder="">
           <label for="floatingPassword">Password</label>
         </div>
-    
+        <h3 class = "pt-3">More information about you!</h3>
+        <div class="form-floating">
+          <input type="number" name="userAge" class="form-control" id="floatingUserAge" placeholder="">
+          <label for="floatingUserAge">Your Age</label>
+        </div>
+        <div class="form-floating">
+          <input name="userLocation" class="form-control" id="floatingUserLocation" placeholder="">
+          <label for="floatingUserLocation">Your Preferred Activity Location</label>
+        </div>
+        <div class="form-group pt-2">
+          <label for="floatingUserPreferredTime">Your Preferred Time (mutiple-select)</label>
+          <select multiple class="form-control" name="userPreferredTime" id="floatingUserPreferredTime">
+            <option>Mornings</option>
+            <option>Afternoons</option>
+            <option>Evenings</option>
+            <option>Nights</option>
+          </select>
+        </div>
+        <div class="form-group pt-2">
+          <label for="floatingUserPreferredDay">Your Preferred Day (mutiple-select)</label>
+          <select multiple class="form-control" name="userPreferredDay" id="floatingUserPreferredDay">
+            <option>Monday</option>
+            <option>Tuesday</option>
+            <option>Wednesday</option>
+            <option>Thursday</option>
+            <option>Friday</option>
+            <option>Saturday</option>
+            <option>Sunday</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="favSport">List your favourite sports.</label>
+          <textarea class="form-control" id="favSport" name="favSport" rows="3"></textarea>
+        </div>
         <button class="w-100 btn btn-lg btn-primary mt-2" type="submit">Register!</button>
     </div> 
   </div>

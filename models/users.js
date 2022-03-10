@@ -5,7 +5,12 @@ var userSchema = new mongoose.Schema({
     username: String,
     firstName: String,
     lastName: String,
-    password: String
+    password: String,
+    userAge: Number,
+    userLocation: String,
+    userPreferredTime: [String],
+    userPreferredDay: [String],
+    favSport: String
 });
 
 userSchema.plugin(passportLocalMongoose);
