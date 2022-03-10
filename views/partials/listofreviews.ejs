@@ -1,0 +1,26 @@
+<table class="table table-hover clickable-row" >
+    <thead>
+        <tr>
+        <th scope="col" style="width: 16%">Date</th>
+        <th scope="col" style="width: 18%">By</th>
+        <th scope="col" style="width: 16%">Rating</th>
+        <th scope="col" style="width: 50%">Review</th>
+        </tr>
+    </thead>
+    <tbody id="listofreviews">
+        <% if (reviews !== null) { %>
+            <% var i=1; reviews.reviews.forEach((elem) => { %>
+                <tr name=<%= elem._id %> data-href="/activity/<%= elem.activityID %>">
+                    <td><%= (new Date( elem.date)).toLocaleDateString("en-SG") %></td>
+                    <td><a href="/viewprofile/<%= elem.reviewerID %>" class="blacklink"><%= elem.reviewerName %></a></td>
+                    <td><%= elem.rating %></td>
+                    <td><%= elem.review %></td>
+                </tr>
+                <% i++ ; %>
+            <% }); %>
+        <% } else { %>
+            <tr><td colspan="4">This user has no reviews.</td></tr>
+            
+        <% }; %>
+    </tbody>
+</table>

@@ -1,5 +1,6 @@
 const getUser = require("./getuser");
 const User = require("../models/users");
+const Review = require("../models/reviews");
 
 module.exports = function(app, s3, myBucket){
     app.get("/viewprofile/:userID", (req,res) => {
@@ -12,10 +13,14 @@ module.exports = function(app, s3, myBucket){
             var url = s3.getSignedUrl('getObject', params);
             // console.log('The URL is', url);
     
-            User.findOne({_id: findUser}, (err, docs) => {
-                if (!err) {
-                        console.log(docs);
-                        res.render("viewprofile", {foundUser: docs, user: user, picUrl: url});
+            User.findOne({_id: findUser}, (usererr, userdocs) => {
+                if (!usererr) {
+                        Review.findOne({userID: findUser}, (err, reviewdocs) => {
+                            if (!err) {
+                                // console.log(reviewdocs);
+                                res.render("viewprofile", {foundUser: userdocs, reviews: reviewdocs, user: user, picUrl: url});
+                            };
+                        });
                 };
             });
         //     } else {

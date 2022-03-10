@@ -1,6 +1,7 @@
 const getUser = require("./getuser");
 const Joined = require("../models/joined");
 const Activity = require("../models/activity");
+const Review = require("../models/reviews");
 
 module.exports = function(app, s3, myBucket){
     app.get("/profile", (req,res) => {
@@ -11,15 +12,17 @@ module.exports = function(app, s3, myBucket){
             var url = s3.getSignedUrl('getObject', params);
             // console.log('The URL is', url);
     
-            Activity.find({hostID: userID}).sort('eventDate').exec((err, docs) => {
-                if (!err) {
-                    Joined.find({userID: userID}).sort('eventDate').exec((err, docs_) => {
+            Activity.find({hostID: userID}).sort('eventDate').exec((activityerr, activitydocs) => {
+                if (!activityerr) {
+                    Joined.find({userID: userID}).sort('eventDate').exec((joinederr, joineddocs) => {
                         var locList = [];
-                        docs.forEach((elem) => {
+                        joineddocs.forEach((elem) => {
                             var loc = [elem.locationName, elem.latitude, elem.longitude, 0];
                             locList.push(loc);
                         });
-                        res.render("profile", {eventList: docs, joinedList: docs_, locList: locList, user: user, picUrl: url});
+                        Review.findOne({userID: userID}, (reviewerr, reviewdocs) => {
+                            res.render("profile", {eventList: activitydocs, joinedList: joineddocs, reviews: reviewdocs, locList: locList, user: user, picUrl: url});
+                        });
                     });
                 };
             });
