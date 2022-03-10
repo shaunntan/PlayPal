@@ -14,6 +14,7 @@ module.exports = function(app, s3, myBucket){
     
             Activity.find({hostID: userID}).sort('eventDate').exec((activityerr, activitydocs) => {
                 if (!activityerr) {
+                    
                     Joined.find({userID: userID}).sort('eventDate').exec((joinederr, joineddocs) => {
                         var locList = [];
                         joineddocs.forEach((elem) => {
