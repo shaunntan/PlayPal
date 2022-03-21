@@ -4,6 +4,7 @@ require('dotenv').config();
 // AWS
 const AWS = require("aws-sdk");
 const S3 = require('aws-sdk/clients/s3');
+
 AWS.config.update({ 
     accessKeyId: `${process.env.AWS_ACCESS_KEY_ID}`,
     secretAccessKey: `${process.env.AWS_SECRET_ACCESS_KEY}`,
@@ -12,6 +13,7 @@ AWS.config.update({
 });
 const ses = new AWS.SES({apiVersion: '2010-12-01'});
 const s3 = new AWS.S3({ apiVersion: '2006-03-01', signatureVersion: 'v4' });
+const lambda = new AWS.Lambda();
 const myBucket = 'cs5224-playpal';
 const signedUrlExpireSeconds = 60;
 
@@ -72,6 +74,7 @@ require('./routes/viewprofile')(app, s3, myBucket);
 require('./routes/viewactivity')(app);
 require('./routes/jointeam')(app);
 require('./routes/leavereview')(app);
+require('./routes/testlambda')(app, lambda);
 
 app.listen(PORT, () => {
 });   
