@@ -9,7 +9,7 @@ module.exports = function(app, lambda){
 
             var payloaddict = {};
 
-            Activity.find({}).exec((err, docs) => {
+            Activity.find({}).limit(5).exec((err, docs) => {
                 if (!err) {
                     payloaddict['activity'] = docs;
                     // console.log(docs)
@@ -18,7 +18,7 @@ module.exports = function(app, lambda){
                         if (!err) {
                             payloaddict['facility'] = docs;
                             // console.log(payloaddict['facility'])
-                            Users.find({}).exec((err, docs) => {
+                            Users.find({}).limit(5).exec((err, docs) => {
                                 if (!err) {
                                     payloaddict['users'] = docs;
                                     // console.log(payloaddict['users'])
