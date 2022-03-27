@@ -304,7 +304,7 @@ def lambda_handler(event,context):
     neworder = neworder[['order','hostID']]
     newactivity = pd.DataFrame.merge(activity_df, neworder, left_on='hostID', right_on='hostID')
     newactivity = newactivity.sort_values('order')
-    newactivity = newactivity.drop(['__v','order'], axis = 1)
+    newactivity = newactivity.drop(['order'], axis = 1)
     
     return newactivity.to_dict(orient='records')
 

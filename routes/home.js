@@ -33,7 +33,7 @@ module.exports = function(app, lambda){
                                             Activity.find({'hostID': {$in: userlist}}).limit(10).exec((err, activitydocs) => {
                                                 payloaddict['activity'] = activitydocs;
                                                 var params = {
-                                                    FunctionName: 'testlambda', /* required */
+                                                    FunctionName: 'playpal-recommender', /* required */
                                                 
                                                     InvocationType: 'RequestResponse',
                                                     Payload: JSON.stringify(payloaddict) /* Strings will be Base-64 encoded on your behalf */,
@@ -44,7 +44,7 @@ module.exports = function(app, lambda){
                                                 if (err) {console.log(err, err.stack);} // an error occurred
                                                 else     {
                                                     var docs = JSON.parse(data.Payload);
-                                                    console.log(docs);
+                                                    // console.log(docs);
                                                     var sportList = [];
                                                     var locList = [];
                                                     // console.log(docs);
@@ -68,7 +68,7 @@ module.exports = function(app, lambda){
                         // if user is not logged in, show him the default view of activities at home page.
                         else {
                             // show whatever is already there
-                            Activity.find({}).sort('eventDate').exec((err, docs) => {
+                            Activity.find({}).sort('eventDate').limit(10).exec((err, docs) => {
                                 if (!err) {
                                     var sportList = [];
                                     var locList = [];

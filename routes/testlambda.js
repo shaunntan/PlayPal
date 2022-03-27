@@ -66,61 +66,6 @@ module.exports = function(app, lambda){
                                         });
                                     }
                                 });                                    
-                                    /*
-                                    Now, we want to retrieve the users, activities and facilities data to pass to our lambda function.
-                                    To this, we will use 3 nodeJS queries with callbacks, to ensure that we save each entry, before we send the json payload
-                                    to lambda function to process.
-                                    */
-                            //         Activity.find({}).limit(5).exec((err, docs) => {
-                            //             if (!err) {
-                            //                 payloaddict['activity'] = docs;
-                            //                 // console.log(payloaddict['activity'])
-                            //                 Facility.find({}).exec((err, docs) => {
-                            //                     if (!err) {
-                            //                         payloaddict['facility'] = docs;
-                            //                         // console.log(payloaddict['facility'])
-                            //                         User.find({'userLocation': userLocation}).limit(5).exec((err, docs) => {
-                            //                             if (!err) {
-                            //                                 payloaddict['users'] = docs;
-                            //                                 console.log(payloaddict['users'])
-                                                            
-                            //                                 // Define our params to be passed into lambda.invoke
-                                                            // var params = {
-                                                            //     FunctionName: 'testlambda2', /* required */
-                                                            //     InvocationType: 'RequestResponse',
-                                                            //     Payload: JSON.stringify(payloaddict) /* Strings will be Base-64 encoded on your behalf */,
-                                                            //   };
-                                                            
-                                                            // // Invoking the lambda function in AWS
-                                                            // lambda.invoke(params, function(err, data) {
-                                                            // if (err) console.log(err, err.stack); // an error occurred
-                                                            // else     console.log(data);           // successful response
-        
-                                                            // });
-                            //                             }
-                            //                         });
-                            //                     }
-                            //                 });
-                            //             }
-                            //         });
-        
-                            //     };
-                            // });
-                            
-
-                            // Now, we need to render the homepage to be shwon as follows: 
-                            // var sportList = [];
-                            //         var locList = [];
-                            //         // console.log(docs);
-                            //         docs.forEach((elem) => {
-                            //             sportList.push(elem.sport);
-                            //             var loc = [elem.locationName, elem.latitude, elem.longitude, 0];
-                            //             locList.push(loc);
-                            //         });
-                            //         const uniqueSportList = [...new Set(sportList)];
-                            //         // render the home page view after getting lambda results
-                            //         res.render("home", {eventList: docs, uniqueSportList: uniqueSportList, locList: locList, user: user});
-
                         } 
                         // if user is not logged in, show him the default view of activities at home page.
                         else {
