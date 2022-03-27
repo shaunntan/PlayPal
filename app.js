@@ -62,7 +62,7 @@ const Facility = require("./models/facility");
 const getUser = require("./routes/getuser");
 
 // routes
-require('./routes/home')(app);
+require('./routes/home')(app, lambda);
 require('./routes/signin')(app, passport);
 require('./routes/logout')(app);
 require('./routes/register')(app, passport);
@@ -74,7 +74,7 @@ require('./routes/viewprofile')(app, s3, myBucket);
 require('./routes/viewactivity')(app);
 require('./routes/jointeam')(app);
 require('./routes/leavereview')(app);
-require('./routes/testlambda')(app, lambda);
+// require('./routes/testlambda')(app, lambda);
 
 app.listen(PORT, () => {
 });   

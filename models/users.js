@@ -10,7 +10,7 @@ var userSchema = new mongoose.Schema({
     userLocation: String,
     userPreferredTime: [String],
     userPreferredDay: [String],
-    favSport: String
+    favSport: [String]
 });
 
 userSchema.plugin(passportLocalMongoose);
