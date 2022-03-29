@@ -1,8 +1,6 @@
 import json
-import numpy as np
-import requests
 import pandas as pd
-import pymongo
+import numpy as np
 import random
 from datetime import datetime
 
@@ -24,32 +22,11 @@ def get_df_from_payload(json_payload):
         
     return data_df
 
-
-### NOT NEEDED ANYMORE SINCE WE ARE doing it on NodeJS to filter list by userlocation ###
-
-# def get_logged_user_from_payload(json_payload):
-#     """
-#     Takes in logged_user json payload as a dictionary from json payload of logged_user and returns the logged_user dataframe!
-#     """
-#     data_df = pd.DataFrame()
-#     data_df = data_df.append(json_payload, ignore_index=True)
-#     return data_df   
-
-### NOT NEEDED ANYMORE SINCE WE ARE doing it on NodeJS to filter list by userlocation ###    
-
 def locate_loggeduser_info_and_filter(single_df, full_df):
     # We want to find out more information from the single_df '_id' and match to full_df '_id' to find the full user's information like location
     # so that we are able to filter the rest of the users accordingly based on location. (narrow down our dataframe)
     
-    # df = df.loc[df['_id'] == users_df['_id'].values[0]]
-    # logged_user_id = single_df['_id'].values[0]
     logged_user_full_info_df = full_df.loc[full_df['_id'] == single_df['_id'].values[0]]
-    
-    # logged_user_location = logged_user_full_info_df['userLocation'].values[0]
-    # return logged_user_full_info_df
-    
-    # filter the rest of the users_df to get a new filtered dataframe with all users staying near the location.
-    # filtered_users_df = full_df.loc[full_df['userLocation'] == logged_user_full_info_df['userLocation'].values[0]]
     
     filtered_users_df = full_df.loc[full_df['userLocation'] == logged_user_full_info_df['userLocation'].values[0]]
     return filtered_users_df
@@ -175,9 +152,6 @@ def recommendations(df,favsport, cosine_sim, indices):
         
     return sorted_users_df, sim_users_df
 
-
-
-
 # create a function to get all the sorted_users' id to be stored in a list, which will be used to compare to the activity_df['hostID'] column
 def create_userid_list(df):
     """
@@ -202,10 +176,6 @@ def activities_by_similar_users(activitydf, userid_list):
         new_df = new_df.append(activitydf.loc[activitydf['hostID'] == userid])
     
     return new_df
-    
-
-
-
 
 # all preferred locations
 pref_loc_list = ['West','East','Central','North','South']
@@ -231,9 +201,6 @@ fac_north = ['Anchorvale Road', 'Woodlands Street 12','Yishun Avenue 1', 'Yishun
 fac_south = ['Stirling Road', 'Yio Chu Kang Road','Evans Road','Tiong Bahru Road','Lengkok Bahru','Aljunied Crescent Avenue 1','Lorong 12 Geylang', 'Rutland Road','Tyrwhitt Road','Geylang Bahru Lane','Stadium Road','Wilkinson Road']
 fac_central = ['Lorong 6 Toa Payoh', 'St Wilfred Road', 'Ang Mo Kio Avenue 9','Ang Mo Kio Avenue 1', 'Bishan Street 14','Burghley Drive']
 
-
-
-
 def lambda_handler(event,context):
     df = get_df_from_payload(event['users'])
     activity_df = get_df_from_payload(event['activity'])
@@ -254,41 +221,7 @@ def lambda_handler(event,context):
     
     # get cosine similarity scores for logged in user to all similar users.
     cosine_sim = calc_cosine_sim(full_logged_user_df, cnt_matrix, words)
-    # # save a set of indices of all favourite sports of similar users by location.
-    # indices = pd.Series(df['string_favSport'])
     
-    # # recommended users dataframe by his favourite sport:
-    # # recommended_users_df = recommendations(df,f'{full_logged_user_df["string_favSport"]}', cosine_sim, indices)
-    # recommended_users_df, test_df = recommendations(df,full_logged_user_df["string_favSport"].values[0], cosine_sim, indices)
-    
-    # # drop unnecessary columns that were not part of original df:
-    # # recommended_users_df2 = recommended_users_df.drop(columns=['string_favSport', 'string_userPreferredDay','string_userPreferredTime','combined_features'], axis=1)
-    
-    # # get list of all user id's from recommended users df
-    # sorted_userid_list = create_userid_list(recommended_users_df)
-    # testing = pd.DataFrame(sorted_userid_list, columns=['testing'])
-    
-    
-    # # using the above list, search within the activity_df 'hostID' column to find the activities hosted by these users.
-    # final_activities_df = activities_by_similar_users(activity_df, sorted_userid_list)
-    
-    
-    # new_df = pd.DataFrame(columns=activity_df.columns)
-    
-    # new_df = new_df.append(activity_df.loc[activity_df['hostID'] == '623f5a0b08358177706f0f42'])
-    
-    
-    # # convert recommended users dataframe to json to be parsed back to server to render homepage view!
-    # final_activities_json = final_activities_df.to_json(default_handler=str, orient='records')
-    
-    
-    # ### TESTING ### Works up till recommended_users_df returns empty dataframe.
-    # # python 
-    # testing_dict = final_activities_df.to_dict(orient='records')
-    # # json string
-    # testtest = json.dumps(testing_dict, default=str)
-    
-    ######
     orderlist = []
     for i, v in enumerate(cosine_sim[0]):
         orderlist.append((i,v))
