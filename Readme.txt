@@ -1,5 +1,5 @@
 Launch Config Prerequisites:
-    1) Place environment variables into AWS Systems Manager Parameter Store
+    1) Place environment variables in .env into AWS Systems Manager Parameter Store
     2) Lambda function for recommender feature should be setup as well
     3) Github source should be made public before launch of EC2 instances. Please contact shaunntan@u.nus.edu
 
