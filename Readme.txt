@@ -1,4 +1,5 @@
 The launch config and environment variables were set up for use with Shaunn Tan's account: cs5224m5@comp.nus.edu.sg
+MongoDB Atlas account is owned by Shaunn Tan.
 
 Launch Config Prerequisites:
     1) Place environment variables in .env into AWS Systems Manager Parameter Store
